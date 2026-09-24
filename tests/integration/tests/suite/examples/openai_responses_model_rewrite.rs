@@ -122,7 +122,11 @@ fn example_config_chat_completions_alias_routes_to_qwen_backend() {
     let body = r#"{"model":"gpt-4.1-mini","messages":[{"role":"user","content":"Route to qwen"}]}"#;
     let raw = http_send(proxy.addr(), &json_post("/v1/chat/completions", body));
 
-    assert_eq!(parse_status(&raw), 200, "chat completions alias should route successfully");
+    assert_eq!(
+        parse_status(&raw),
+        200,
+        "chat completions alias should route successfully"
+    );
     assert_eq!(
         parse_body(&raw),
         "qwen-backend",
