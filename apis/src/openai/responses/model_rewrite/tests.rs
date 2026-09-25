@@ -519,19 +519,14 @@ async fn chat_completions_alias_rewrites_model() {
 }
 
 #[tokio::test]
-async fn chat_completions_trailing_slash_rewrites_model() {
-    let (_, body) = run_filter_at_path(
-        ALIAS_CONFIG,
-        "/v1/chat/completions/",
-        r#"{"model":"codex-mini-latest","messages":[]}"#,
-    )
-    .await;
+async fn chat_completions_trailing_slash_does_not_rewrite_model() {
+    let original = r#"{"model":"codex-mini-latest","messages":[]}"#;
+    let (_, body) = run_filter_at_path(ALIAS_CONFIG, "/v1/chat/completions/", original).await;
 
-    let parsed: serde_json::Value = serde_json::from_slice(&body).unwrap();
     assert_eq!(
-        parsed["model"].as_str(),
-        Some("llama-3.3-70b"),
-        "trailing slash should be treated as the chat completions create endpoint"
+        body.as_ref(),
+        original.as_bytes(),
+        "trailing-slash Chat Completions path should be skipped"
     );
 }
 

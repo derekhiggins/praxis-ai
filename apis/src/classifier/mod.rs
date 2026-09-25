@@ -129,13 +129,12 @@ pub(crate) fn is_responses_create(method: &http::Method, path: &str) -> bool {
 
 /// Check whether a method + path pair is the Chat Completions create endpoint.
 ///
-/// Returns `true` only for `POST /v1/chat/completions` (with optional
-/// trailing slash). Kept separate from [`is_responses_create`] so Responses
-/// API filters keep their current endpoint semantics; only filters that are
-/// genuinely endpoint-agnostic, such as `openai_responses_model_rewrite`,
-/// accept both.
+/// Returns `true` only for `POST /v1/chat/completions`. Kept separate from
+/// [`is_responses_create`] so Responses API filters keep their current endpoint
+/// semantics; only filters that are genuinely endpoint-agnostic, such as
+/// `openai_responses_model_rewrite`, accept both.
 pub(crate) fn is_chat_completions_create(method: &http::Method, path: &str) -> bool {
-    method == http::Method::POST && normalize_trailing_slash(path) == "/v1/chat/completions"
+    method == http::Method::POST && path == "/v1/chat/completions"
 }
 
 /// Check whether a request is a Responses API `WebSocket` handshake.
@@ -1134,10 +1133,10 @@ mod tests {
     }
 
     #[test]
-    fn chat_create_matches_post_v1_chat_completions_trailing_slash() {
+    fn chat_create_rejects_post_v1_chat_completions_trailing_slash() {
         assert!(
-            is_chat_completions_create(&http::Method::POST, "/v1/chat/completions/"),
-            "POST /v1/chat/completions/ should match chat create"
+            !is_chat_completions_create(&http::Method::POST, "/v1/chat/completions/"),
+            "POST /v1/chat/completions/ should not match chat create"
         );
     }
 
