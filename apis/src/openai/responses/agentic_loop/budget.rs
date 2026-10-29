@@ -20,8 +20,10 @@ const JSON_NODE_RESERVE: usize = 256;
 const OUTPUT_NODE_RESERVE: usize = 8_192;
 /// Raw body, SSE framing, rmcp parsing, and result conversion of one MCP
 /// reply. Measured peak is about 8x wire bytes plus 250 bytes per node.
+#[cfg(any(test, feature = "openai-mcp-tools"))]
 const MCP_RESULT_WIRE_MULTIPLIER: usize = 16;
 /// Per-node reserve for an MCP reply, about 2x the measured parse cost.
+#[cfg(any(test, feature = "openai-mcp-tools"))]
 const MCP_RESULT_NODE_RESERVE: usize = 512;
 /// Retained projections of each wire chunk across the logical stream.
 const STREAM_WIRE_MULTIPLIER: usize = 32;
@@ -423,6 +425,7 @@ pub(crate) fn output_charge(bytes: &[u8]) -> Option<usize> {
 }
 
 /// Charge an MCP server reply before rmcp parses it.
+#[cfg(any(test, feature = "openai-mcp-tools"))]
 pub(crate) fn mcp_result_charge(bytes: &[u8]) -> Option<usize> {
     bytes
         .len()
